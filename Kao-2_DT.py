@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 12 07:53:38 2025
@@ -10,11 +11,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 # ===============================
 # 1. 資料載入與基本顯示
 # ===============================
-st.title("房價資料分析-DT")
+st.title("房價資料分析")
 
 # 狀態訊息
 st.success('分析環境載入成功 ✅')
@@ -58,15 +60,10 @@ for label, col in {
     "總價 (price_total)": "price_total"
 }.items():
     if col in filtered_df.columns:
-        col_min = filtered_df[col].min()
-        col_max = filtered_df[col].max()
-        if pd.notnull(col_min) and pd.notnull(col_max) and pd.api.types.is_numeric_dtype(filtered_df[col]):
-            st.write(f"{label} ➤ 最小：{col_min:.2f}，最大：{col_max:.2f}")
-        else:
-            st.write(f"{label} ➤ 資料不可用（非數值或含缺值）")
+        st.write(f"{label} ➤ 最小：{filtered_df[col].min():.2f}，最大：{filtered_df[col].max():.2f}")
 
 # ===============================
-# 4. 三種圖表：箱型圖、散佈圖、直方圖
+# 4. 三種圖表：箱型圖、散佈圖、雷達圖
 # ===============================
 st.header("互動式圖表分析")
 tab1, tab2, tab3 = st.tabs(["📦 箱型圖", "⚫ 散佈圖", "📊 直方圖"])
@@ -84,7 +81,7 @@ with tab3:
         st.warning("⚠️ 篩選後無資料可供圖表分析，請調整側欄條件")
     else:
         bar_df = filtered_df.dropna(subset=["ratio", "price_unit", "price_total"])
-        st.write("資料型態檢查：", bar_df[["ratio", "price_unit", "price_total"]].dtypes)
+        print(bar_df[["ratio", "price_unit", "price_total"]].dtypes)
         bar_df[["ratio", "price_unit", "price_total"]] = bar_df[["ratio", "price_unit", "price_total"]].apply(pd.to_numeric, errors='coerce')
         bar_df = bar_df.dropna(subset=["ratio", "price_unit", "price_total"])
         if bar_df.empty:
@@ -134,3 +131,4 @@ if st.button("預測"):
                               columns=["age", "area", "room"])
     pred = model.predict(input_data)[0]
     st.success(f"🌟 預測單價為：{pred:.2f} 萬元")
+
