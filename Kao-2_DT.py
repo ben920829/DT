@@ -47,6 +47,7 @@ st.subheader("篩選後的資料")
 st.dataframe(filtered_df)
 
 # ===============================
+# ===============================
 # 3. 統計摘要與欄位最大/最小值
 # ===============================
 st.header("統計摘要")
@@ -60,7 +61,14 @@ for label, col in {
     "總價 (price_total)": "price_total"
 }.items():
     if col in filtered_df.columns:
-        st.write(f"{label} ➤ 最小：{filtered_df[col].min():.2f}，最大：{filtered_df[col].max():.2f}")
+        column_data = filtered_df[col].dropna()
+        if pd.api.types.is_numeric_dtype(column_data) and not column_data.empty:
+            min_val = column_data.min()
+            max_val = column_data.max()
+            st.write(f"{label} ➤ 最小：{min_val:.2f}，最大：{max_val:.2f}")
+        else:
+            st.warning(f"{label} ➤ 無有效數值資料可顯示")
+
 
 # ===============================
 # 4. 三種圖表：箱型圖、散佈圖、雷達圖
