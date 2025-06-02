@@ -10,7 +10,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 
 # ===============================
 # 1. 資料載入與基本顯示
@@ -59,7 +58,12 @@ for label, col in {
     "總價 (price_total)": "price_total"
 }.items():
     if col in filtered_df.columns:
-        st.write(f"{label} ➤ 最小：{filtered_df[col].min():.2f}，最大：{filtered_df[col].max():.2f}")
+        col_min = filtered_df[col].min()
+        col_max = filtered_df[col].max()
+        if pd.notnull(col_min) and pd.notnull(col_max) and pd.api.types.is_numeric_dtype(filtered_df[col]):
+            st.write(f"{label} ➤ 最小：{col_min:.2f}，最大：{col_max:.2f}")
+        else:
+            st.write(f"{label} ➤ 資料不可用（非數值或含缺值）")
 
 # ===============================
 # 4. 三種圖表：箱型圖、散佈圖、直方圖
