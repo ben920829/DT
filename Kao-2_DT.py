@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 12 07:53:38 2025
@@ -8,10 +7,8 @@ Created on Mon May 12 07:53:38 2025
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 
 # ===============================
 # 1. 資料載入與基本顯示
@@ -37,16 +34,15 @@ age_range = st.sidebar.slider("屋齡範圍", 1, 40, (10, 20))
 room = st.sidebar.selectbox("房間數", ["All", "2", "3"])
 ratio_range = st.sidebar.slider("主建物佔比範圍", 35, 100, (50, 70))
 
-# 篩選資料
+# 篩選資料，注意room轉整數比較
 filtered_df = df[(df["age"] >= age_range[0]) & (df["age"] <= age_range[1]) &
                  (df["ratio"] >= ratio_range[0]) & (df["ratio"] <= ratio_range[1])]
 if room != "All":
-    filtered_df = filtered_df[filtered_df["room"] == room]
+    filtered_df = filtered_df[filtered_df["room"] == int(room)]
 
 st.subheader("篩選後的資料")
 st.dataframe(filtered_df)
 
-# ===============================
 # ===============================
 # 3. 統計摘要與欄位最大/最小值
 # ===============================
@@ -69,27 +65,31 @@ for label, col in {
         else:
             st.warning(f"{label} ➤ 無有效數值資料可顯示")
 
-
 # ===============================
-# 4. 三種圖表：箱型圖、散佈圖、雷達圖
+# 4. 三種圖表：箱型圖、散佈圖、直方圖
 # ===============================
 st.header("互動式圖表分析")
 tab1, tab2, tab3 = st.tabs(["📦 箱型圖", "⚫ 散佈圖", "📊 直方圖"])
 
 with tab1:
-    fig1 = px.box(filtered_df, x="room", y="price_unit", title="房間數與單價")
-    st.plotly_chart(fig1)
+    if filtered_df.empty:
+        st.warning("⚠️ 篩選後無資料，無法顯示箱型圖")
+    else:
+        fig1 = px.box(filtered_df, x="room", y="price_unit", title="房間數與單價")
+        st.plotly_chart(fig1)
 
 with tab2:
-    fig2 = px.scatter(filtered_df, x="age", y="price_total", color="room", title="屋齡與總價")
-    st.plotly_chart(fig2)
+    if filtered_df.empty:
+        st.warning("⚠️ 篩選後無資料，無法顯示散佈圖")
+    else:
+        fig2 = px.scatter(filtered_df, x="age", y="price_total", color="room", title="屋齡與總價")
+        st.plotly_chart(fig2)
 
 with tab3:
     if filtered_df.empty:
         st.warning("⚠️ 篩選後無資料可供圖表分析，請調整側欄條件")
     else:
         bar_df = filtered_df.dropna(subset=["ratio", "price_unit", "price_total"])
-        print(bar_df[["ratio", "price_unit", "price_total"]].dtypes)
         bar_df[["ratio", "price_unit", "price_total"]] = bar_df[["ratio", "price_unit", "price_total"]].apply(pd.to_numeric, errors='coerce')
         bar_df = bar_df.dropna(subset=["ratio", "price_unit", "price_total"])
         if bar_df.empty:
@@ -139,4 +139,3 @@ if st.button("預測"):
                               columns=["age", "area", "room"])
     pred = model.predict(input_data)[0]
     st.success(f"🌟 預測單價為：{pred:.2f} 萬元")
-
