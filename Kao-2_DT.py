@@ -81,7 +81,7 @@ with tab3:
         st.warning("⚠️ 篩選後無資料可供圖表分析，請調整側欄條件")
     else:
         bar_df = filtered_df.dropna(subset=["ratio", "price_unit", "price_total"])
-        print(bar_df[["ratio", "price_unit", "price_total"]].dtypes)
+       st.write("資料型態檢查：", bar_df[["ratio", "price_unit", "price_total"]].dtypes)
         bar_df[["ratio", "price_unit", "price_total"]] = bar_df[["ratio", "price_unit", "price_total"]].apply(pd.to_numeric, errors='coerce')
         bar_df = bar_df.dropna(subset=["ratio", "price_unit", "price_total"])
         if bar_df.empty:
