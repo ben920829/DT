@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 12 07:53:38 2025
@@ -63,7 +62,7 @@ for label, col in {
         st.write(f"{label} ➤ 最小：{filtered_df[col].min():.2f}，最大：{filtered_df[col].max():.2f}")
 
 # ===============================
-# 4. 三種圖表：箱型圖、散佈圖、雷達圖
+# 4. 三種圖表：箱型圖、散佈圖、直方圖
 # ===============================
 st.header("互動式圖表分析")
 tab1, tab2, tab3 = st.tabs(["📦 箱型圖", "⚫ 散佈圖", "📊 直方圖"])
@@ -81,7 +80,7 @@ with tab3:
         st.warning("⚠️ 篩選後無資料可供圖表分析，請調整側欄條件")
     else:
         bar_df = filtered_df.dropna(subset=["ratio", "price_unit", "price_total"])
-       st.write("資料型態檢查：", bar_df[["ratio", "price_unit", "price_total"]].dtypes)
+        st.write("資料型態檢查：", bar_df[["ratio", "price_unit", "price_total"]].dtypes)
         bar_df[["ratio", "price_unit", "price_total"]] = bar_df[["ratio", "price_unit", "price_total"]].apply(pd.to_numeric, errors='coerce')
         bar_df = bar_df.dropna(subset=["ratio", "price_unit", "price_total"])
         if bar_df.empty:
@@ -131,4 +130,3 @@ if st.button("預測"):
                               columns=["age", "area", "room"])
     pred = model.predict(input_data)[0]
     st.success(f"🌟 預測單價為：{pred:.2f} 萬元")
-
